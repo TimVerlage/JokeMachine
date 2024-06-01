@@ -1,24 +1,24 @@
-import readline from 'node:readline/promises'; // Importerar readline för användarinmatning
+import readline from 'node:readline'; // Importerar readline för användarinmatning
 import { programmingJokes } from './Jokes.js'; // Importerar skämt från en separat fil
 
-// Skapar ett interface för att läsa användarinmatning.
+// Skapar ett interface för att läsa användarinmatning från terminalen
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// Slumpar ett index.
+// Slumpar ett index inom räckvidden av skämtlistan
 function getRandomIndex() {
     return Math.floor(Math.random() * programmingJokes.length);
 }
 
-// Hämtar ett slumpmässigt skämt från listan.
+// Hämtar ett slumpmässigt skämt från listan
 function getRandomJoke() {
     const randomIndex = getRandomIndex();
     return programmingJokes[randomIndex];
 }
 
-// Skriver ut välkomstmeddelandet.
+// Skriver ut välkomstmeddelandet
 function printWelcomeMessage() {
     console.log(`
 ############################
@@ -27,14 +27,14 @@ Let me tell you something about programming:
 `);
 }
 
-// Hämtar och skriver ut ett visst antal skämt.
+// Hämtar och skriver ut ett visst antal skämt
 function printJokes(numJokes) {
     let jokes = [];
     
     for (let i = 0; i < numJokes; i++) {
         let joke;
         
-        // Försöker hitta ett unikt skämt som inte redan finns i listan.
+        // Försöker hitta ett unikt skämt som inte redan finns i listan
         do {
             joke = getRandomJoke();
         } while (jokes.some(j => j.id === joke.id));
@@ -42,42 +42,47 @@ function printJokes(numJokes) {
         jokes.push(joke);
     }
 
-    // Skriver ut skämten
+    // Skriver ut varje skämt
     jokes.forEach((joke, index) => {
         const jokeID = joke.id + 1;
         const jokeQuestion = joke.question;
         const jokeAnswer = joke.answer;
 
         console.log(`
-Joke #${jokeID} > ${jokeQuestion} ${jokeAnswer} `);
+Joke #${jokeID}
+> ${jokeQuestion} ${jokeAnswer}
+`);
     });
 }
 
-// Hanterar huvudflödet av programmet
-async function showJokes() {
-    let showMore = true;
-    
-    while (showMore) {
-        printWelcomeMessage(); // Skriver ut välkomstmeddelandet.
-        
-        // Frågar användaren hur många skämt de vill höra.
-        let input = await rl.question('How many jokes do you want? '); 
+// Frågar användaren hur många skämt de vill höra
+function askForNumberOfJokes() {
+    rl.question('How many jokes do you want? ', (input) => {
         input = Number(input);
-        //if not a number försök igen.
+        
         if (isNaN(input) || input <= 0) {
             console.log('Please write a valid number, try again...');
-            continue;
+            askForNumberOfJokes();
+        } else {
+            printJokes(input);
+            askIfWantMoreJokes();
         }
-
-        printJokes(input); // Skriver ut det antal skämt användaren har begärt.
-
-        // Frågar användaren om de vill höra fler skämt.
-        const answer = await rl.question('Do you want another joke? (Y/N) ');
-        showMore = answer.toLowerCase() === 'y'; // ta emot små bokstäver.
-    }
-    
-    rl.close(); // Stänger readline interface.
+    });
 }
 
-showJokes(); // Startar programmet
+// Frågar användaren om de vill höra fler skämt
+function askIfWantMoreJokes() {
+    rl.question('Do you want another joke? (Y/N) ', (answer) => {
+        if (answer.toLowerCase() === 'y') {
+            printWelcomeMessage();
+            askForNumberOfJokes();
+        } else {
+            rl.close();
+        }
+    });
+}
+
+// Startar programmet
+printWelcomeMessage();
+askForNumberOfJokes();
 
