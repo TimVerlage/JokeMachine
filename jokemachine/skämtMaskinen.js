@@ -1,24 +1,24 @@
-import readline from 'node:readline'; // Importerar readline för användarinmatning
-import { programmingJokes } from './Jokes.js'; // Importerar skämt från en separat fil
+import readline from 'node:readline'; // Importerar readline för användarinmatning.
+import { programmingJokes } from './Jokes.js'; // Importerar skämt från Jokes.js
 
-// Skapar ett interface för att läsa användarinmatning från terminalen
+// Skapar ett interface för att läsa användarinmatning.
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// Slumpar ett index inom räckvidden av skämtlistan
+// Slumpar ett index i skämtlistan.
 function getRandomIndex() {
     return Math.floor(Math.random() * programmingJokes.length);
 }
 
-// Hämtar ett slumpmässigt skämt från listan
+// Slumpar skämt från listan.
 function getRandomJoke() {
     const randomIndex = getRandomIndex();
     return programmingJokes[randomIndex];
 }
 
-// Skriver ut välkomstmeddelandet
+// Skriver ut välkomstmeddelandet.
 function printWelcomeMessage() {
     console.log(`
 ############################
@@ -27,14 +27,14 @@ Let me tell you something about programming:
 `);
 }
 
-// Hämtar och skriver ut ett visst antal skämt
+// Hämtar och skriver ut ett visst antal skämt.
 function printJokes(numJokes) {
     let jokes = [];
     
     for (let i = 0; i < numJokes; i++) {
         let joke;
         
-        // Försöker hitta ett unikt skämt som inte redan finns i listan
+        // Försöker hitta ett unikt skämt som inte redan har skrivits.
         do {
             joke = getRandomJoke();
         } while (jokes.some(j => j.id === joke.id));
@@ -42,16 +42,14 @@ function printJokes(numJokes) {
         jokes.push(joke);
     }
 
-    // Skriver ut varje skämt
+    // Skriver ut skämten.
     jokes.forEach((joke, index) => {
         const jokeID = joke.id + 1;
         const jokeQuestion = joke.question;
         const jokeAnswer = joke.answer;
 
         console.log(`
-Joke #${jokeID}
-> ${jokeQuestion} ${jokeAnswer}
-`);
+Joke #${jokeID} > ${jokeQuestion} ${jokeAnswer} `);
     });
 }
 
@@ -59,7 +57,7 @@ Joke #${jokeID}
 function askForNumberOfJokes() {
     rl.question('How many jokes do you want? ', (input) => {
         input = Number(input);
-        
+        //if not a number, try again.
         if (isNaN(input) || input <= 0) {
             console.log('Please write a valid number, try again...');
             askForNumberOfJokes();
@@ -70,10 +68,10 @@ function askForNumberOfJokes() {
     });
 }
 
-// Frågar användaren om de vill höra fler skämt
+// Frågar användaren om de vill höra fler skämt.
 function askIfWantMoreJokes() {
     rl.question('Do you want another joke? (Y/N) ', (answer) => {
-        if (answer.toLowerCase() === 'y') {
+        if (answer.toLowerCase() === 'y') {      //gör så små bokstäver tas emot.
             printWelcomeMessage();
             askForNumberOfJokes();
         } else {
@@ -82,7 +80,7 @@ function askIfWantMoreJokes() {
     });
 }
 
-// Startar programmet
+// Startar programmet.
 printWelcomeMessage();
 askForNumberOfJokes();
 
